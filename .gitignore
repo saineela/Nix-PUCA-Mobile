@@ -1,0 +1,40 @@
+# ---- Gradle / build outputs ----
+.gradle/
+build/
+.cxx/
+.externalNativeBuild/
+captures/
+
+# ---- Kotlin ----
+.kotlin/
+
+# ---- Local machine config (SDK path, per-developer) ----
+local.properties
+
+# ---- IDE ----
+.idea/
+*.iml
+.vscode/
+
+# ---- Signing material: never commit keystores ----
+*.jks
+*.keystore
+keystore.properties
+
+# ---- Build artifacts: distribute via releases, not Git ----
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# ---- Native / misc ----
+*.so.dwarf
+*.hprof
+
+# ---- OS junk ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Freebuff session metadata ----
+.freebuff/

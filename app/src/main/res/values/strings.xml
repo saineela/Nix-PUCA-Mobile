@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NIX Home</string>
+    <string name="app_tagline">Compact Android connector for the NIX PUCA system</string>
+</resources>
