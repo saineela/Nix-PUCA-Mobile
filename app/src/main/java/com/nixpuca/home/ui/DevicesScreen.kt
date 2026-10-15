@@ -741,9 +741,15 @@ private fun DeviceDetailPage(
     val state = if (isRingDevice) liveRingState ?: reportedState else reportedState
     val isConnected = device.connected && device.deviceConnected != false
     // The graphical deck already covers on/off/colour/brightness/effects for
-    // the ring light — the generic forms below would just repeat them.
+    // the ring light — those specific forms would just repeat it. Every other
+    // declared control (volume, mute, speech, sound tuning, output routing,
+    // Bluetooth) still gets its generic form below.
+    val deckActions = remember { setOf("on", "off", "color", "brightness", "effect") }
     val otherControls = remember(device.controls) {
-        device.controls.filter { it.tool != "control_ring" }
+        device.controls.filter { control ->
+            if (control.tool != "control_ring") return@filter true
+            control.baseArguments.optString("action") !in deckActions
+        }
     }
 
     Column(
@@ -838,6 +844,54 @@ private fun DeviceDetailPage(
                 }, if (isConnected) state?.on == true else null),
             ),
         )
+
+        // Declared status rows (device_ui fields): power, volume, external
+        // speaker, output mode, EQ … whatever the skill publishes.
+        if (device.fields.isNotEmpty()) {
+            Surface(
+                shape = RoundedCornerShape(18.dp),
+                color = NixPalette.Mist,
+                border = BorderStroke(1.dp, NixPalette.Line),
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Status",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    device.fields.forEach { field ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(
+                                text = field.label,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = NixPalette.Muted,
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                field.color?.let { hex ->
+                                    Box(
+                                        Modifier
+                                            .size(12.dp)
+                                            .background(parseHexColor(hex), CircleShape),
+                                    )
+                                    Spacer(Modifier.width(6.dp))
+                                }
+                                Text(
+                                    text = field.text,
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         device.runtimeError?.let { ErrorNote(it) }
 
         // Controls ------------------------------------------------------
